@@ -82,26 +82,26 @@ function collide(collision) {
             }
             break;
         case instance.team === other.team &&
-            (instance.settings.hitsOwnType === "pushOnlyTeam" ||
-                other.settings.hitsOwnType === "pushOnlyTeam"):
-            {
-                let pusher = instance.settings.hitsOwnType === "pushOnlyTeam" ? instance : other;
-                let entity = instance.settings.hitsOwnType === "pushOnlyTeam" ? other : instance;
-                // Dominator / Mothership collisions
-                if (
-                    instance.settings.hitsOwnType === other.settings.hitsOwnType ||
-                    entity.settings.hitsOwnType === "never"
-                ) return;
-                let a = 1 + 10 / (Math.max(entity.velocity.length, pusher.velocity.length) + 10);
-                advancedcollide(pusher, entity, false, false, a);
-            }
+        (instance.settings.hitsOwnType === "pushOnlyTeam" ||
+            other.settings.hitsOwnType === "pushOnlyTeam"):
+        {
+            let pusher = instance.settings.hitsOwnType === "pushOnlyTeam" ? instance : other;
+            let entity = instance.settings.hitsOwnType === "pushOnlyTeam" ? other : instance;
+            // Dominator / Mothership collisions
+            if (
+                instance.settings.hitsOwnType === other.settings.hitsOwnType ||
+                entity.settings.hitsOwnType === "never"
+            ) return;
+            let a = 1 + 10 / (Math.max(entity.velocity.length, pusher.velocity.length) + 10);
+            advancedcollide(pusher, entity, false, false, a);
+        }
             break;
         case (instance.type === "crasher" && other.type === "food") ||
-            (other.type === "crasher" && instance.type === "food"):
+        (other.type === "crasher" && instance.type === "food"):
             firmcollide(instance, other);
             break;
         case instance.team !== other.team ||
-            (instance.team === other.team &&
+        (instance.team === other.team &&
             (
                 instance.healer ||
                 other.healer
@@ -115,7 +115,7 @@ function collide(collision) {
             advancedcollide(instance, other, true, true);
             break;
         case instance.settings.hitsOwnType == "never" ||
-            other.settings.hitsOwnType == "never":
+        other.settings.hitsOwnType == "never":
             break;
         case instance.settings.hitsOwnType === other.settings.hitsOwnType:
             switch (instance.settings.hitsOwnType) {

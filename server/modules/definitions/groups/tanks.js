@@ -719,6 +719,24 @@ exports.autoTankGun = {
         },
     ],
 };
+exports.machineAutoTankGun = {
+    PARENT: ["genericTank"],
+    LABEL: "",
+    BODY: {
+        FOV: 3,
+    },
+    CONTROLLERS: ["canRepel", "onlyAcceptInArc", "mapAltToFire", "nearestDifferentMaster"],
+    COLOR: 16,
+    GUNS: [
+        {
+            POSITION: [12, 10, 1.4, 8, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.mach]),
+                TYPE: "bullet",
+            },
+        },
+    ],
+};
 exports.bansheegun = {
     PARENT: ["genericTank"],
     LABEL: "",
@@ -1048,15 +1066,15 @@ exports.basic = {
     PARENT: ["genericTank"],
     LABEL: "Basic",
     BODY: {
-        ACCELERATION: base.ACCEL * 1,
-        SPEED: base.SPEED * 1,
-        HEALTH: base.HEALTH * 1,
-        DAMAGE: base.DAMAGE * 1,
-        PENETRATION: base.PENETRATION * 1,
-        SHIELD: base.SHIELD * 1,
-        REGEN: base.REGEN * 1,
-        FOV: base.FOV * 1,
-        DENSITY: base.DENSITY * 1,
+        ACCELERATION: base.ACCEL,
+        SPEED: base.SPEED,
+        HEALTH: base.HEALTH,
+        DAMAGE: base.DAMAGE,
+        PENETRATION: base.PENETRATION,
+        SHIELD: base.SHIELD,
+        REGEN: base.REGEN,
+        FOV: base.FOV,
+        DENSITY: base.DENSITY,
         PUSHABILITY: 1,
         HETERO: 3,
     },
@@ -4786,10 +4804,10 @@ exports.septaTrapper = (() => {
                 },
             },
             {
-                POSITION: [15, 7, 1, 0, 0, 2 * a, 1 * d],
+                POSITION: [15, 7, 1, 0, 0, 2 * a, d],
             },
             {
-                POSITION: [3, 7, 1.7, 15, 0, 2 * a, 1 * d],
+                POSITION: [3, 7, 1.7, 15, 0, 2 * a, d],
                 PROPERTIES: {
                     SHOOT_SETTINGS: combineStats([g.trap, g.hexatrap]),
                     TYPE: "trap",

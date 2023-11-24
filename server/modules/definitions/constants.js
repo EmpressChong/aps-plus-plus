@@ -88,5 +88,6 @@ module.exports = {
 	    REGEN: 0.025,
 	    FOV: 1.075,
 	    DENSITY: 0.5,
+		RELOAD: 1
 	}
 };

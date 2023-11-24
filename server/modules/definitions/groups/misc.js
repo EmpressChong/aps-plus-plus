@@ -275,8 +275,7 @@ exports.sanctuary = {
     LABEL: "Sanctuary",
     LEVEL: 45,
     SIZE: 20,
-    FACING_TYPE: "autospin",
-    CONTROLLERS: ["alwaysFire"],
+    CONTROLLERS: [["spin", { independent: true, speed: 0.04 }]],
     SKILL: skillSet({
         rld: 1.25,
         dam: 1.25,

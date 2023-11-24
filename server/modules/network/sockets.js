@@ -1,4 +1,5 @@
 let permissionsDict = {},
+    net = require('net'),
     clients = [],
     players = [],
     disconnections = [];
@@ -15,7 +16,7 @@ function close(socket) {
     // Remove it from any group if there was one...
     if (socket.group) groups.removeMember(socket);
     // Remove the player if one was created
-    if (index != -1) {
+    if (index !== -1) {
         // Kill the body if it exists
         if (player.body != null) {
             if (player.body.underControl) {
@@ -1408,6 +1409,7 @@ const broadcast = {
         if (i !== -1) util.remove(subscribers, i);
     },
 };
+let lastTime = 0;
 
 const sockets = {
     players: players,
@@ -1424,7 +1426,9 @@ const sockets = {
         }
     },
     connect: (socket, req) => {
-        if (c.enforceMaxPlayers && players.length >= c.maxPlayers) return socket.terminate();
+        // This function initalizes the socket upon connection
+        if (Date.now() - lastTime < 250) return socket.terminate();
+        lastTime = Date.now();
 
         // Get information about the new connection and verify it
         util.log("A client is trying to connect...");
@@ -1530,13 +1534,29 @@ const sockets = {
             util.log("[ERROR]:");
             util.error(e);
         });
+        
+        //account for proxies
+        //very simplified reimplementation of what the forwarded-for npm package does
+        let store = req.headers['fastly-client-ip'] || req.headers['x-forwarded-for'] || req.headers['z-forwarded-for'] ||
+                    req.headers['forwarded']        || req.headers['x-real-ip']       || req.connection.remoteAddress,
+            ips = store.split(',');
 
-        try {
-            socket.ip = getIP(req);
-        } catch (msg) {
-            util.log('Kicked: ' + msg);
-            return socket.close();
+        if (!ips) {
+            return socket.kick("Missing IP: " + store);
         }
+
+        for (let i = 0; i < ips.length; i++) {
+            if (net.isIPv6(ips[i])) {
+                ips[i] = ips[i].trim();
+            } else {
+                ips[i] = ips[i].split(':')[0].trim();
+            }
+            if (!net.isIP(ips[i])) {
+                return socket.kick("Invalid IP(s): " + store);
+            }
+        }
+
+        socket.ip = ips[0];
 
         // Log it
         clients.push(socket);

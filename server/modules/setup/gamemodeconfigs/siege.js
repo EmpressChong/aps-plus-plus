@@ -5,5 +5,5 @@ module.exports = {
     TILE_WIDTH: 300,
     TILE_HEIGHT: 300,
     ROOM_SETUP: ['map_siege_legacy'],
-    BOT_XP: 500,
+    BOT_XP: 15000,
 };

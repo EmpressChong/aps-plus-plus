@@ -997,20 +997,6 @@ const socketInit = port => {
                     }
                 }
                 break;
-            case 'REDIRECT':
-                let [ secure, ip, key, autojoin ] = m,
-                // https://stackoverflow.com/a/326076/10793061
-                    isInIFrame = true;
-                try { isInIFrame = window.self !== window.top; } catch (e) {}
-
-                secure = !!secure;
-                autojoin = !!autojoin;
-                if (isInIFrame) {
-                    window.top.postMessage({ secure, ip, key, autojoin });
-                } else {
-                    console.log('redirecting\nip:', ip, 'secure:', secure, '\nkey:', key, '\nautojoin:', autojoin);
-                    location.href = `${secure ? 'https' : 'http'}://${ip}/app` + (key || autojoin ? '?' : '') + (key ? 'key=' + key : '') + (key && autojoin ? '&' : '') + (autojoin ? 'autojoin=' + autojoin : '');
-                }
             default:
                 throw new Error('Unknown message index.');
         }

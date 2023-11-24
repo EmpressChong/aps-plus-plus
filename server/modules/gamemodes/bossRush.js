@@ -27,6 +27,18 @@ class BossRush {
             [  2, "eliteSpinner"],
             [  2, "eliteSkimmer"],
 
+            // deltas
+            [  3, "deltaDestroyer"],
+            [  3, "deltaSkimmer"],
+            [  3, "deltaSprayer"],
+
+            //mysticals
+            [  1, "sorcerer"],
+            [  2, "summoner"],
+            [  2, "enchantress"],
+            [  2, "exorcistor"],
+            [  2, "shaman"],
+
             //nesters
             [  3, "nestKeeper"],
             [  3, "nestWarden"],
@@ -58,7 +70,7 @@ class BossRush {
         this.waveId = -1;
         this.gameActive = true;
         this.timer = 0;
-        this.remainingEnemies = 0;;
+        this.remainingEnemies = 0;
     }
 
     generateWaves() {
@@ -90,7 +102,7 @@ class BossRush {
     }
 
     spawnSanctuary(tile, team, type = false) {
-        type = type ? type : Class.sanctuaryTier3;
+        type = type ? type : Class.sanctuaryTier1;
         let o = new Entity(tile.loc);
         o.define(type);
         o.team = team;
@@ -110,7 +122,7 @@ class BossRush {
             if (isAC) {
                 tile.color = 'white';
             } else */if (o.team === TEAM_ENEMIES) {
-                this.spawnSanctuary(tile, TEAM_BLUE, Class.sanctuaryTier3);
+                this.spawnSanctuary(tile, TEAM_BLUE, Class.sanctuaryTier1);
                 tile.color = getTeamColor(TEAM_BLUE);
                 sockets.broadcast('A sanctuary has been repaired!');
             } else {
@@ -138,15 +150,6 @@ class BossRush {
         enemy.refreshBodyAttributes();
         enemy.controllers.push(new ioTypes.bossRushAI(enemy));
 
-        this.remainingEnemies++;
-        enemy.on('dead', () => {
-            //this enemy has been killed, decrease the remainingEnemies counter
-            //if afterwards the counter happens to be 0, announce that the wave has been defeated
-            if (!--this.remainingEnemies) {
-                sockets.broadcast(`Wave ${this.waveId + 1} has been defeated!`);
-                sockets.broadcast(`The next wave will start shortly.`);
-            }
-        });
         return enemy;
     }
 
@@ -175,8 +178,8 @@ class BossRush {
             this.spawnEnemyWrapper(getSpawnableArea(TEAM_ENEMIES), ran.choose(this.smallFodderChoices));
         }
 
-        //spawn a friendly boss every 20 waves
-        if (waveId % 20 == 19) {
+        //spawn a friendly boss every 5 waves
+        if (waveId % 5 === 4) {
             setTimeout(() => this.spawnFriendlyBoss(), 5000);
         }
     }
@@ -192,9 +195,9 @@ class BossRush {
 
     //runs every second
     loop() {
-        //the timer has ran out? reset timer and spawn the next wave
+        //the timer has run out? reset timer and spawn the next wave
         if (this.timer <= 0) {
-            this.timer = 150; // 5 seconds
+            this.timer = 1500; // 30 seconds
             this.waveId++;
             if (this.waves[this.waveId]) {
                 this.spawnWave(this.waveId);
@@ -204,7 +207,7 @@ class BossRush {
                 this.playerWin();
             }
 
-        //if the timer has not ran out and there arent any remaining enemies left, decrease the timer
+        //if the timer has not run out and there aren't any remaining enemies left, decrease the timer
         } else if (!this.remainingEnemies) {
             this.timer--;
         }

@@ -902,15 +902,15 @@ exports.sprayerLegion = {
     TURRETS: [
         {
             POSITION: [14, 6, 0, 180, 190, 0],
-            TYPE: ["machineGun", {COLOR: -1}],
+            TYPE: ["machineAutoTankGun", {COLOR: 5}],
         },
         {
             POSITION: [14, 6, 0, 60, 190, 0],
-            TYPE: ["machineGun", {COLOR: -1}],
+            TYPE: ["machineAutoTankGun", {COLOR: 5}],
         },
         {
             POSITION: [14, 6, 0, -60, 190, 0],
-            TYPE: ["machineGun", {COLOR: -1}],
+            TYPE: ["machineAutoTankGun", {COLOR: 5}],
         },
     ],
 };

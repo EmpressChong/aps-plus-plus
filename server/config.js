@@ -2,7 +2,7 @@ module.exports = {
     // Server
 
     // Game server domain.
-    // If 'localhost:NUMBER', the NUMBER must equal the port setting.
+    // If 'localhost:NUMBER', the port must equal the port setting.
     host: "localhost:26301",
 
     // Which port to run the web server on.
@@ -20,7 +20,7 @@ module.exports = {
 
     // The \modules\setup\gamemodeconfigs\ files to load.
     // To change specific things about specific gamemodes (such as team count for tdm), edit their config file in \modules\setup\gamemodeconfigs\.
-    GAME_MODES: ['tdm', 'domination'],
+    GAME_MODES: ['siege'],
 
     // The room files to load in the setup/rooms folder.
     // NOTE: If a /gamemodeconfig/ file "replaces" the value of ROOM_SETUP, it just adds its own ROOM_SETUP's content to this array.
@@ -31,12 +31,6 @@ module.exports = {
     // The dimensions of a single tile on the map.
     TILE_WIDTH: 400,
     TILE_HEIGHT: 400,
-
-    // Maximum amount of players the game server can handle.
-    maxPlayers: 32,
-
-    // If we should start refusing connections if the player limit is reached.
-    enforceMaxPlayers: false,
 
 
 
@@ -57,7 +51,7 @@ module.exports = {
     WINDOW_NAME: 'OSA Game Server Instance',
 
     // Allows you to type and run javascript code in the terminal.
-    REPL_WINDOW: false,
+    REPL_WINDOW: true,
 
     // Welcome message once a player spawns.
     WELCOME_MESSAGE: "You have spawned! Welcome to the game.\n"
@@ -91,7 +85,7 @@ module.exports = {
     LEVEL_SKILL_POINT_FUNCTION: level => {
         if (level < 2) return 0;
         if (level <= 40) return 1;
-        if (level <= 45 && level & 1 == 1) return 1;
+        if (level <= 45 && level && 1 === 1) return 1;
         return 0;
     },
 
@@ -102,19 +96,19 @@ module.exports = {
     MAX_UPGRADE_TIER: 9,
 
     // Level difference between each tier.
-    TIER_MULTIPLIER: 15,
+    TIER_MULTIPLIER: 5,
 
     // Max normally achievable level.
-    LEVEL_CAP: 45,
+    LEVEL_CAP: 50,
 
     // Max level you get by level-up key and auto-level-up.
-    LEVEL_CHEAT_CAP: 45,
+    LEVEL_CHEAT_CAP: 50,
 
     // Amount of player-bots to spawn.
-    BOTS: 0,
+    BOTS: 80,
 
     // How much XP player-bots get per second until they reach LEVEL_CAP.
-    BOT_XP: 125,
+    BOT_XP: 15000,
 
     // The chances of a player-bot upgrading a specific skill when skill upgrades are available.
     BOT_SKILL_UPGRADE_CHANCES: [ 1, 1, 3, 4, 4, 4, 4, 2, 1, 1],
@@ -228,48 +222,5 @@ module.exports = {
     MAZE: false,
     HUNT: false,
     MODE: "ffa",
-    TAG: false,
-
-
-
-    // Miscellaneous
-
-    // How long a entity chat message lasts in milliseconds.
-    // Includes the fade-out period.
-    CHAT_MESSAGE_DURATION: 30_000,
-
-    // If you don't want your players to color their messages.
-    // They get sanitized after addons interpret them, but before they're added to the chat message dictionary.
-    SANITIZE_CHAT_MESSAGE_COLORS: true,
-
-    // If someone tries to get a file that does not exist, send them this instead.
-    DEFAULT_FILE: 'browser.html',
-
-    // Allows server browser clients to connect to the game server with the purpose of checking ping.
-    MOTD_SOCKET: true,
-
-    // Delay between the server sending a MOTD update and the client asking for another one.
-    MOTD_SOCKET_REFRESH_DELAY: 1000,
-
-    // How long the motd socket is allowed to be alive for.
-    MOTD_SOCKET_TIMEOUT: 60_000,
-
-    // Specifies what shows up in server browsers for this server.
-    MOTD_DATA: {
-        name: "A Public §#44f§OSA§reset§ Server",
-        description: "Come play §#44f§Open-Source Arras§reset§ with us!",
-        version: "Beta 0.9.11 (Browser Branch)",
-        tags: [ "vanilla", "dreadsv1" ]
-    },
-
-    // Window name of the server terminal.
-    WINDOW_NAME: 'APS++ Game Server Instance',
-
-    // Allows you to type and run javascript code in the terminal.
-    REPL_WINDOW: false,
-
-    // Welcome message once a player spawns.
-    WELCOME_MESSAGE: "You have spawned! Welcome to the game.\n"
-                    +"You will be invulnerable until you move or shoot.\n"
-                    +"This is a beta release of APS++. Please join the official discord server to report any bugs you encounter!"
+    TAG: false
 }
