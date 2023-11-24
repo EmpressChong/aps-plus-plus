@@ -8,15 +8,6 @@ import * as socketStuff from "./lib/socketInit.js";
 (async function (util, global, settings, Canvas, color, gameDraw, socketStuff) {
 
 let { socketInit, gui, leaderboard, minimap, moveCompensation, lag, getNow } = socketStuff;
-// fetch("changelog.md", { cache: "no-cache" })
-// .then((response) => response.text())
-// .then((response) => {
-//     const changelogs = response.split("\n\n").map((changelog) => changelog.split("\n"));
-//     for (let changelog of changelogs) {
-//         changelog[0] = changelog[0].split(":").map((line) => line.trim());
-//         document.getElementById("patchNotes").innerHTML += `<div><b>${changelog[0][0].slice(1).trim()}</b>: ${changelog[0].slice(1).join(":") || "Update lol"}<ul>${changelog.slice(1).map((line) => `<li>${line.slice(1).trim()}</li>`).join("")}</ul><hr></div>`;
-//     }
-// });
 
 fetch("changelog.html", { cache: "no-cache" })
 .then(async ChangelogsHTMLFile => {
@@ -126,51 +117,8 @@ function getMockups() {
 }
 window.onload = async () => {
     window.serverAdd = (await (await fetch("/serverData.json")).json()).ip;
-    if (Array.isArray(window.serverAdd)) {
-        window.isMultiserver = true;
-        const servers = window.serverAdd;
-        let serverSelector = document.getElementById("serverSelector"),
-            tbody = document.createElement("tbody");
-        serverSelector.style.display = "block";
-        document.getElementById("startMenuSlidingContent").removeChild(document.getElementById("serverName"));
-        serverSelector.classList.add("serverSelector");
-        serverSelector.classList.add("shadowscroll");
-        serverSelector.appendChild(tbody);
-        let myServer = {
-            classList: {
-                contains: () => false,
-            },
-        };
-        for (let server of servers) {
-            try {
-                const tr = document.createElement("tr");
-                const td = document.createElement("td");
-                td.textContent = `${server.gameMode} | ${server.players} Players`;
-                td.onclick = () => {
-                    if (myServer.classList.contains("selected")) {
-                        myServer.classList.remove("selected");
-                    }
-                    tr.classList.add("selected");
-                    myServer = tr;
-                    window.serverAdd = server.ip;
-                    getMockups();
-                };
-                tr.appendChild(td);
-                tbody.appendChild(tr);
-                myServer = tr;
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        if (Array.from(myServer.children)[0].onclick) {
-            Array.from(myServer.children)[0].onclick();
-        }
-    } else {
-        getMockups();
-        util.pullJSON("gamemodeData").then((json) => {
-            document.getElementById("serverName").innerHTML = `<h4 class="nopadding">${json.gameMode} | ${json.players} Players</h4>`;
-        });
-    }
+    getMockups();
+    util.pullJSON("gamemodeData").then(json => document.getElementById("serverName").innerHTML = `<h4 class="nopadding">${json.gameMode} | ${json.players} Players</h4>`);
     // Save forms
     util.retrieveFromLocalStorage("playerNameInput");
     util.retrieveFromLocalStorage("playerKeyInput");

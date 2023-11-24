@@ -2,7 +2,7 @@ module.exports = {
     // Server
 
     // Game server domain.
-    // If 'localhost:NUMBER', the port must equal the port setting.
+    // If 'localhost:NUMBER', the NUMBER must equal the port setting.
     host: "localhost:26301",
 
     // Which port to run the web server on.
@@ -31,6 +31,12 @@ module.exports = {
     // The dimensions of a single tile on the map.
     TILE_WIDTH: 400,
     TILE_HEIGHT: 400,
+
+    // Maximum amount of players the game server can handle.
+    maxPlayers: 32,
+
+    // If we should start refusing connections if the player limit is reached.
+    enforceMaxPlayers: false,
 
 
 
@@ -222,5 +228,48 @@ module.exports = {
     MAZE: false,
     HUNT: false,
     MODE: "ffa",
-    TAG: false
+    TAG: false,
+
+
+
+    // Miscellaneous
+
+    // How long a entity chat message lasts in milliseconds.
+    // Includes the fade-out period.
+    CHAT_MESSAGE_DURATION: 30_000,
+
+    // If you don't want your players to color their messages.
+    // They get sanitized after addons interpret them, but before they're added to the chat message dictionary.
+    SANITIZE_CHAT_MESSAGE_COLORS: true,
+
+    // If someone tries to get a file that does not exist, send them this instead.
+    DEFAULT_FILE: 'browser.html',
+
+    // Allows server browser clients to connect to the game server with the purpose of checking ping.
+    MOTD_SOCKET: true,
+
+    // Delay between the server sending a MOTD update and the client asking for another one.
+    MOTD_SOCKET_REFRESH_DELAY: 1000,
+
+    // How long the motd socket is allowed to be alive for.
+    MOTD_SOCKET_TIMEOUT: 60_000,
+
+    // Specifies what shows up in server browsers for this server.
+    MOTD_DATA: {
+        name: "A Public §#44f§OSA§reset§ Server",
+        description: "Come play §#44f§Open-Source Arras§reset§ with us!",
+        version: "Beta 0.9.11 (Browser Branch)",
+        tags: [ "vanilla", "dreadsv1" ]
+    },
+
+    // Window name of the server terminal.
+    WINDOW_NAME: 'APS++ Game Server Instance',
+
+    // Allows you to type and run javascript code in the terminal.
+    REPL_WINDOW: false,
+
+    // Welcome message once a player spawns.
+    WELCOME_MESSAGE: "You have spawned! Welcome to the game.\n"
+                    +"You will be invulnerable until you move or shoot.\n"
+                    +"This is a beta release of APS++. Please join the official discord server to report any bugs you encounter!"
 }
