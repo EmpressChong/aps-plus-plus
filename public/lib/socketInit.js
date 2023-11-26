@@ -689,7 +689,6 @@ const convert = {
     broadcast: () => {
         let all = get.all();
         let by = minimapAllInt.update(all);
-        minimapTeamInt.reset();
         by = minimapTeamInt.update(all, by);
         by = leaderboardInt.update(all, by);
         get.take(by);
@@ -875,10 +874,14 @@ const socketInit = port => {
                     clockDiff = Math.round(sum / valid);
                     // Start the game
                     console.log(sync);
-                    console.log('Syncing complete, calculated clock difference ' + clockDiff + 'ms. Beginning game.');
-                    global.gameStart = true;
-                    global.entities = [];
-                    global.message = '';
+                    console.log('Syncing complete, calculated clock difference ' + clockDiff + 'ms.');
+                    global.message = 'Loading mockups, this could take a bit...';
+                    global.mockupLoading.then(() => {
+                        console.log('Beginning game.');
+                        global.gameStart = true;
+                        global.entities = [];
+                        global.message = '';
+                    });
                 }
                 break;
             case 'm': // message

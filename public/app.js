@@ -119,9 +119,13 @@ global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.user
 var serverName = "Connected";
 var provider = "Unknown";
 function getMockups() {
-    util.pullJSON("mockups").then((data) => {
-        global.mockups = data;
-        generateTankTree(global.mockups.find((r) => r.name === "Basic").index);
+    global.mockupLoading = new Promise(Resolve => {
+        util.pullJSON("mockups").then(data => {
+            global.mockups = data;
+            generateTankTree(global.mockups.find((r) => r.name === "Basic").index);
+            console.log('Mockups loading complete.');
+            Resolve();
+        });
     });
 }
 window.onload = async () => {

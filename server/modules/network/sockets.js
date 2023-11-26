@@ -876,7 +876,7 @@ const spawn = (socket, name) => {
         util.remove(disconnections, disconnections.indexOf(recover));
         clearTimeout(recover.timeout);
         body = recover.body;
-        body.reset(false);
+        body.controllers = body.controllers.filter(con => !(con instanceof ioTypes.listenToPlayer));
         body.become(player);
         player.team = body.team;
     } else {
@@ -1270,12 +1270,12 @@ const Delta = class {
 let minimapAll = new Delta(5, () => {
     let all = [];
     for (let my of entities) {
-        if (my.alwaysShowOnMinimap ||
+        if (my.allowedOnMinimap && (
+            my.alwaysShowOnMinimap ||
             (my.type === "wall" && my.alpha > 0.2) ||
             my.type === "miniboss" ||
-            (my.type === "tank" && my.lifetime) ||
             my.isMothership
-        ) {
+        )) {
             all.push({
                 id: my.id,
                 data: [
@@ -1296,7 +1296,7 @@ let minimapTeams = teamIDs.map((team) =>
     new Delta(3, () => {
         let all = [];
         for (let my of entities)
-            if (my.type === "tank" && my.team === -team && my.master === my && !my.lifetime) {
+            if (my.type === "tank" && my.team === -team && my.master === my && my.allowedOnMinimap) {
                 all.push({
                     id: my.id,
                     data: [
@@ -1382,7 +1382,7 @@ setInterval(() => {
     let leaderboardUpdate = leaderboard.update();
     for (let socket of subscribers) {
         if (!socket.status.hasSpawned) continue;
-        let team = minimapTeamUpdates[socket.player.team - 1];
+        let team = minimapTeamUpdates[-socket.player.team - 1];
         if (socket.status.needsNewBroadcast) {
             socket.talk("b", ...minimapUpdate.reset, ...(team ? team.reset : [0, 0]), ...(socket.anon ? [0, 0] : leaderboardUpdate.reset));
             socket.status.needsNewBroadcast = false;

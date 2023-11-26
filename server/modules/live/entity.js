@@ -809,6 +809,7 @@ class Entity extends EventEmitter {
         this.define("genericEntity");
         // Initalize physics and collision
         this.alwaysShowOnMinimap = false;
+        this.allowedOnMinimap = true;
         this.maxSpeed = 0;
         this.facingLocked = false;
         this.facing = 0;
@@ -1254,6 +1255,7 @@ class Entity extends EventEmitter {
             for (let root of this.rerootUpgradeTree) finalRoot += root + "\\/";
             this.rerootUpgradeTree = finalRoot.substring(0, finalRoot.length - 2);
         }
+        if (set.ON_MINIMAP != null) this.allowedOnMinimap = set.ON_MINIMAP;
         if (set.TURRETS != null) {
             for (let i = 0; i < this.turrets.length; i++) {
                 this.turrets[i].destroy();

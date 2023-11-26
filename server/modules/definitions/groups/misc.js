@@ -63,6 +63,7 @@ exports.dominator = {
     PARENT: ["genericTank"],
     LABEL: "Dominator",
     UPGRADE_LABEL: 'Unknown',
+    ON_MINIMAP: false,
     DANGER: 7,
     SKILL: skillSet({
         rld: 1,
@@ -1025,6 +1026,7 @@ exports.baseProtector = {
     PARENT: ["genericTank"],
     LABEL: "Base",
     UPGRADE_LABEL: "Base Protector",
+    ON_MINIMAP: false,
     SIZE: 64,
     DAMAGE_CLASS: 0,
     ACCEPTS_SCORE: false,
