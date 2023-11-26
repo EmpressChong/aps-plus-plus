@@ -56,5 +56,5 @@ function closeArena() {
         if (!alive) close();
     }, 500);
 }
-
+global.closeArena = closeArena;
 module.exports = { closeArena };
