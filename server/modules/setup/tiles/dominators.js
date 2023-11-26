@@ -49,7 +49,7 @@ spawn = (tile, team, color, type = false) => {
 
             for (let player of sockets.players) {
                 if (player.body && player.body.team === newTeam) {
-                    player.body.sendMessage("Press H to take control of the dominator.");
+                    player.body.sendMessage("Press F to take control of the dominator.");
                 }
             }
 

@@ -18,6 +18,12 @@ bossSpawn = new Tile({
         if (!room.spawnable[TEAM_ENEMIES]) room.spawnable[TEAM_ENEMIES] = [];
         room.spawnable[TEAM_ENEMIES].push(tile);
     },
+    /*tick: tile => {
+        for (let i = 0; i < tile.entities.length; i++) {
+            let entity = tile.entities[i];
+            if (!entity.isBoss && !entity.isArenaCloser) entity.kill();
+        }
+    }*/
     tick: tile => {
         for (let i = 0; i < tile.entities.length; i++) {
             let entity = tile.entities[i];

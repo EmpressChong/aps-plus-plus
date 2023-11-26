@@ -27,7 +27,6 @@ for (let filename of addons) {
     if (!filename.endsWith('.js')) continue;
     
     console.log(`Loading addon: ${filename}`);
-
     require('./addons/' + filename)({ Config: c, Class, Events: events });
 }
 
@@ -49,7 +48,7 @@ if (c.flattenDefintions) {
         }
 
         if (definition.PARENT) {
-            if (Array.isArray(definition.PARENT)) {
+            if (Array.isArray(definition.PARENT) || "string" == typeof definition.PARENT) {
                 flatten(output, definition.PARENT);
             } else for (let parent in definition.PARENT) {
                 flatten(output, definition.PARENT[parent]);

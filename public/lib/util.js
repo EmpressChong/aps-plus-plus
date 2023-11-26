@@ -163,6 +163,8 @@ const util = {
             size: mainMockup.size,
             realSize: mainMockup.realSize,
             color: trueColor,
+            borderless: mainMockup.borderless,
+            drawFill: mainMockup.drawFill,
             upgradeColor: mainMockup.upgradeColor,
             glow: mainMockup.glow,
             render: {
@@ -220,6 +222,8 @@ const util = {
             turrets: turrets.map((t) => {
                 let o = util.getEntityImageFromMockup(t.index);
                 o.color = t.color;
+                o.borderless = t.borderless;
+                o.drawFill = t.drawFill;
                 o.realSize = o.realSize / o.size * mainMockup.size * t.sizeFactor;
                 o.size = mainMockup.size * t.sizeFactor;
                 o.sizeFactor = t.sizeFactor;

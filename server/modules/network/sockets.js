@@ -422,7 +422,7 @@ function incoming(message, socket) {
             break;
         case "1":
             //suicide squad
-            if (player.body != null) {
+            if (player.body != null && !player.body.underControl) {
                 for (let i = 0; i < entities.length; i++) {
                     let instance = entities[i];
                     if (instance.settings.clearOnMasterUpgrade && instance.master.id === player.body.id) {
@@ -456,9 +456,19 @@ function incoming(message, socket) {
             if (player.body == null) return 1;
             let body = player.body;
             if (body.underControl) {
+                if (c.DOMINATOR_LOOP) {
                 body.giveUp(player, body.isDominator ? "" : undefined);
-                socket.talk("m", "You are no longer controlling the mothership.");
+                socket.talk("m", "You have relinquished control of the dominator.");
                 return 1;
+                } else if (c.MOTHERSHIP_LOOP) {
+                body.giveUp(player, body.isDominator ? "" : undefined);
+                socket.talk("m", "You have relinquished control of the mothership.");
+                return 1;
+                } else {
+                body.giveUp(player, body.isDominator ? "" : undefined);
+                socket.talk("m", "You have relinquished control of the special tank.");
+                return 1;
+                }
             }
             if (c.MOTHERSHIP_LOOP) {
                 let motherships = entities
@@ -472,7 +482,7 @@ function incoming(message, socket) {
                     })
                     .filter((instance) => instance);
                 if (!motherships.length) {
-                    socket.talk("m", "There are no motherships available that are on your team!");
+                    socket.talk("m", "There are no motherships available that are on your team.");
                     return 1;
                 }
                 let mothership = motherships.shift();
@@ -484,8 +494,8 @@ function incoming(message, socket) {
                 player.body.FOV += 0.5;
                 player.body.refreshBodyAttributes();
                 player.body.name = body.name;
-                player.body.sendMessage("You are now controlling the mothership!");
-                player.body.sendMessage("Press H to relinquish control of the mothership!");
+                player.body.sendMessage("You are now controlling the mothership.");
+                player.body.sendMessage("Press F to relinquish control of the mothership.");
             } else if (c.DOMINATOR_LOOP) {
                 let dominators = entities.map((entry) => {
                     if (entry.isDominator && entry.team === player.body.team && !entry.underControl) return entry;
@@ -503,10 +513,10 @@ function incoming(message, socket) {
                 player.body.FOV += 0.5;
                 player.body.refreshBodyAttributes();
                 player.body.name = body.name;
-                player.body.sendMessage("You are now controlling the dominator!");
-                player.body.sendMessage("Press H to relinquish control of the dominator!");
+                player.body.sendMessage("You are now controlling the dominator.");
+                player.body.sendMessage("Press F to relinquish control of the dominator.");
             } else {
-                socket.talk("m", "You cannot use this.");
+                socket.talk("m", "There are no special tanks in this mode that you can control.");
             }
             break;
 
@@ -866,7 +876,7 @@ const spawn = (socket, name) => {
         util.remove(disconnections, disconnections.indexOf(recover));
         clearTimeout(recover.timeout);
         body = recover.body;
-        body.reset(false);
+        body.controllers = body.controllers.filter(con => !(con instanceof ioTypes.listenToPlayer));
         body.become(player);
         player.team = body.team;
     } else {
@@ -895,10 +905,10 @@ const spawn = (socket, name) => {
     body.socket = socket;
     switch (c.MODE) {
         case "tdm":
-            body.color = getTeamColor(body.team);
+            if (body.color == "16 0 1 0 false") body.color = getTeamColor(body.team);
             break;
         default: 
-            body.color = (c.RANDOM_COLORS ? ran.choose([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]) : 12) + ' 0 1 0 false';
+            if (body.color == "16 0 1 0 false") body.color = (c.RANDOM_COLORS ? ran.choose([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]) : 12) + ' 0 1 0 false';
     }
     // Decide what to do about colors when sending updates and stuff
     player.teamColor = !c.RANDOM_COLORS && c.MODE === "ffa" ? 10 : body.color; // blue
@@ -954,13 +964,15 @@ function flatten(data) {
             /*  2 */ data.layer,
             /*  3 */ data.index,
             /*  4 */ data.color,
-            /*  5 */ data.size,
-            /*  6 */ data.realSize,
-            /*  7 */ data.sizeFactor,
-            /*  8 */ data.angle,
-            /*  9 */ data.direction,
-            /* 10 */ data.offset,
-            /* 11 */ data.mirrorMasterAngle,
+            /*  5 */ data.borderless,
+            /*  6 */ data.drawFill,
+            /*  7 */ data.size,
+            /*  8 */ data.realSize,
+            /*  9 */ data.sizeFactor,
+            /* 10 */ data.angle,
+            /* 11 */ data.direction,
+            /* 12 */ data.offset,
+            /* 13 */ data.mirrorMasterAngle,
         );
     } else {
         output.push(
@@ -977,15 +989,17 @@ function flatten(data) {
             /* 11 */ data.twiggle,
             /* 12 */ data.layer,
             /* 13 */ data.color,
-            /* 14 */ data.invuln,
-            /* 15 */ Math.ceil(65535 * data.health),
-            /* 16 */ Math.round(65535 * data.shield),
-            /* 17 */ Math.round(255 * data.alpha),
+            /* 14 */ data.borderless,
+            /* 15 */ data.drawFill,
+            /* 16 */ data.invuln,
+            /* 17 */ Math.ceil(65535 * data.health),
+            /* 18 */ Math.round(65535 * data.shield),
+            /* 19 */ Math.round(255 * data.alpha),
         );
         if (data.type & 0x04) {
             output.push(
-                /* 18 */ data.name,
-                /* 19 */ data.score
+                /* 20 */ data.name,
+                /* 21 */ data.score
             );
         }
     }
@@ -1081,6 +1095,7 @@ const eyes = (socket) => {
                     camera.y = player.body.cameraOverrideY === null ? player.body.photo.y : player.body.cameraOverrideY;
                     camera.vx = player.body.photo.vx;
                     camera.vy = player.body.photo.vy;
+                    camera.scoping = player.body.cameraOverrideX !== null;
                     // Get what we should be able to see
                     setFov = player.body.fov;
                     // Get our body id
@@ -1151,6 +1166,7 @@ const eyes = (socket) => {
                 setFov,
                 camera.vx,
                 camera.vy,
+                camera.scoping,
                 ...player.gui.publish(),
                 visible.length,
                 ...view
@@ -1254,12 +1270,12 @@ const Delta = class {
 let minimapAll = new Delta(5, () => {
     let all = [];
     for (let my of entities) {
-        if (my.alwaysShowOnMinimap ||
+        if (my.allowedOnMinimap && (
+            my.alwaysShowOnMinimap ||
             (my.type === "wall" && my.alpha > 0.2) ||
             my.type === "miniboss" ||
-            (my.type === "tank" && my.lifetime) ||
             my.isMothership
-        ) {
+        )) {
             all.push({
                 id: my.id,
                 data: [
@@ -1280,7 +1296,7 @@ let minimapTeams = teamIDs.map((team) =>
     new Delta(3, () => {
         let all = [];
         for (let my of entities)
-            if (my.type === "tank" && my.team === -team && my.master === my && !my.lifetime) {
+            if (my.type === "tank" && my.team === -team && my.master === my && my.allowedOnMinimap) {
                 all.push({
                     id: my.id,
                     data: [
@@ -1366,7 +1382,7 @@ setInterval(() => {
     let leaderboardUpdate = leaderboard.update();
     for (let socket of subscribers) {
         if (!socket.status.hasSpawned) continue;
-        let team = minimapTeamUpdates[socket.player.team - 1];
+        let team = minimapTeamUpdates[-socket.player.team - 1];
         if (socket.status.needsNewBroadcast) {
             socket.talk("b", ...minimapUpdate.reset, ...(team ? team.reset : [0, 0]), ...(socket.anon ? [0, 0] : leaderboardUpdate.reset));
             socket.status.needsNewBroadcast = false;

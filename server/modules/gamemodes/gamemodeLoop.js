@@ -1,7 +1,11 @@
-const bossRush = new BossRush()
-const train = new Train()
-const moon = new Moon()
-const hunt = new ManHunt()
+let bossRush;
+if (c.SPECIAL_BOSS_SPAWNS) bossRush = new BossRush();
+let train;
+if (c.TRAIN) train = new Train();
+let moon;
+if (c.SPACE_MODE) moon = new Moon();
+let hunt;
+if (c.HUNT) hunt = new ManHunt();
 
 if (c.MOTHERSHIP_LOOP) mothershipLoop.spawn();
 if (c.SPECIAL_BOSS_SPAWNS) bossRush.init();

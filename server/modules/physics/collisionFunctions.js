@@ -241,6 +241,9 @@ function advancedcollide(my, n, doDamage, doInelastic, nIsFirmCollide = false) {
                 : my.healer && n.team == my.team && n.type == "tank" && my.master.id != n.id);
         }
     }
+    // Exit if healer (healers don't push on collide)
+    if (n.healer && n.team == my.team && my.type == "tank" && n.master.id != my.id) return;
+    if (my.healer && n.team == my.team && n.type == "tank" && my.master.id != n.id) return;
     /************* DO MOTION ***********/
     if (nIsFirmCollide < 0) {
         nIsFirmCollide *= -0.5;

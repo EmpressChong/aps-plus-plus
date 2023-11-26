@@ -262,14 +262,8 @@ class Canvas {
             y: mouse.clientY * global.ratio,
         }) === 0;
         if (!this.spinLock) return;
-        this.target.x = mouse.clientX * global.ratio - this.width / 2;
-        this.target.y = mouse.clientY * global.ratio - this.height / 2;
-        if (this.reverseDirection) {
-            this.target.x *= -1;
-            this.target.y *= -1;
-        }
-        this.target.x *= global.screenWidth / this.width;
-        this.target.y *= global.screenHeight / this.height;
+        global.mouse.x = mouse.clientX;
+        global.mouse.y = mouse.clientY;
     }
 }
 export { Canvas }

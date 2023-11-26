@@ -179,13 +179,17 @@ class HealthType {
         return this.amount / this.max;
     }
     getDamage(amount, capped = true) {
+        let damageToMax = this.amount - this.max;
         switch (this.type) {
             case "dynamic":
-                return capped
+                return Math.max(capped
                     ? Math.min(amount * this.permeability, this.amount)
-                    : amount * this.permeability;
+                    : amount * this.permeability,
+                    damageToMax);
             case "static":
-                return capped ? Math.min(amount, this.amount) : amount;
+                return Math.max(
+                    capped ? Math.min(amount, this.amount) : amount,
+                    damageToMax);
         }
     }
     regenerate(boost = false) {

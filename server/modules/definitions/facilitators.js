@@ -455,41 +455,6 @@ exports.makeCross = (type, name = -1) => {
     }
     return output;
 }
-exports.makeZipper = (type, name = -1) => {
-    let output = exports.dereference(type);
-    let spawner1 = {
-        /********* LENGTH    WIDTH     ASPECT        X             Y         ANGLE     DELAY */
-        POSITION: [7, 7.5, 0.6, 7, 2.5, 20, 0],
-        PROPERTIES: {
-            SHOOT_SETTINGS: exports.combineStats([g.swarm]),
-            TYPE: "swarm",
-            STAT_CALCULATOR: gunCalcNames.swarm,
-        },
-    };
-    let spawner2 = {
-        /********* LENGTH    WIDTH     ASPECT        X             Y         ANGLE     DELAY */
-        POSITION: [7, 7.5, 0.6, 7, -2.5, -20, 0.5],
-        PROPERTIES: {
-            SHOOT_SETTINGS: exports.combineStats([g.swarm]),
-            TYPE: "swarm",
-            STAT_CALCULATOR: gunCalcNames.swarm,
-        },
-    };
-    if (type.TURRETS != null) {
-        output.TURRETS = type.TURRETS;
-    }
-    if (type.GUNS == null) {
-        output.GUNS = [spawner1, spawner2];
-    } else {
-        output.GUNS = [spawner1, spawner2, ...type.GUNS];
-    }
-    if (name == -1) {
-        output.LABEL = "Bi-Swarming " + type.LABEL;
-    } else {
-        output.LABEL = name;
-    }
-    return output;
-}
 exports.makeSwarming = (type, name = -1) => {
     let output = exports.dereference(type);
     let spawner = {
@@ -497,7 +462,7 @@ exports.makeSwarming = (type, name = -1) => {
         POSITION: [7, 7.5, 0.6, 7, 0, 0, 0],
         PROPERTIES: {
             SHOOT_SETTINGS: exports.combineStats([g.swarm]),
-            TYPE: "minion",
+            TYPE: "autoswarm",
             STAT_CALCULATOR: gunCalcNames.swarm,
         },
     };

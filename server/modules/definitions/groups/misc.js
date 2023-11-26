@@ -22,7 +22,7 @@ exports.rock = {
     },
     VALUE: 0,
     SIZE: 60,
-    COLOR: 16,
+    COLOR: "grey",
     VARIES_IN_SIZE: true,
     ACCEPTS_SCORE: false,
 };
@@ -55,7 +55,7 @@ exports.wall = {
 exports.dominationBody = {
     LABEL: "",
     CONTROLLERS: [["spin", { startAngle: Math.PI / 2, speed: 0, independent: true }]],
-    COLOR: 9,
+    COLOR: "black",
     SHAPE: 6,
     INDEPENDENT: true,
 };
@@ -63,6 +63,7 @@ exports.dominator = {
     PARENT: ["genericTank"],
     LABEL: "Dominator",
     UPGRADE_LABEL: 'Unknown',
+    ON_MINIMAP: false,
     DANGER: 7,
     SKILL: skillSet({
         rld: 1,
@@ -275,7 +276,8 @@ exports.sanctuary = {
     LABEL: "Sanctuary",
     LEVEL: 45,
     SIZE: 20,
-    CONTROLLERS: [["spin", { independent: true, speed: 0.04 }]],
+    FACING_TYPE: "autospin",
+    CONTROLLERS: ["alwaysFire"],
     SKILL: skillSet({
         rld: 1.25,
         dam: 1.25,
@@ -329,7 +331,7 @@ for (let tier of sancTiers) {
 exports.crasher = {
     TYPE: "crasher",
     LABEL: "Crasher",
-    COLOR: 5,
+    COLOR: "pink",
     SHAPE: 3,
     SIZE: 5,
     VARIES_IN_SIZE: true,
@@ -358,7 +360,7 @@ exports.crasherSpawner = {
     LABEL: "Spawned",
     STAT_NAMES: statnames.drone,
     CONTROLLERS: ["nearestDifferentMaster"],
-    COLOR: 5,
+    COLOR: "pink",
     INDEPENDENT: true,
     AI: {
         chase: true,
@@ -391,7 +393,8 @@ exports.sentry = {
     TYPE: "crasher",
     LABEL: "Sentry",
     DANGER: 3,
-    COLOR: 5,
+    COLOR: "pink",
+    UPGRADE_COLOR: "pink",
     SHAPE: 3,
     SIZE: 10,
     SKILL: skillSet({
@@ -434,7 +437,7 @@ exports.trapTurret = {
     },
     INDEPENDENT: true,
     CONTROLLERS: ["nearestDifferentMaster", 'onlyAcceptInArc'],
-    COLOR: 16,
+    COLOR: "grey",
     AI: {
         SKYNET: true,
         FULL_VIEW: true,
@@ -471,7 +474,7 @@ exports.shottrapTurret = {
     },
     INDEPENDENT: true,
     CONTROLLERS: ['nearestDifferentMaster', 'onlyAcceptInArc'], 
-    COLOR: 16,
+    COLOR: "grey",
     AI: {
         SKYNET: true,
         FULL_VIEW: true,
@@ -520,7 +523,7 @@ exports.barricadeTurret = {
     },
     INDEPENDENT: true,
     CONTROLLERS: ["nearestDifferentMaster"],
-    COLOR: 16,
+    COLOR: "grey",
     AI: {
         SKYNET: true,
         FULL_VIEW: true,
@@ -559,6 +562,7 @@ exports.barricadeTurret = {
 exports.sentrySwarm = {
     PARENT: ["sentry"],
     UPGRADE_LABEL: "Swarm Sentry",
+    UPGRADE_COLOR: "pink",
     GUNS: [
         {
             POSITION: [7, 14, 0.6, 7, 0, 180, 0],
@@ -580,13 +584,14 @@ exports.sentryTrap = makeAuto(exports.sentry, "Sentry", {
     size: 12,
 });
 exports.sentryTrap.UPGRADE_LABEL = "Trap Sentry";
-
-exports.shinySentry = { // if youre gonna mald about the shape not being 0 save yourself time by changing it yourself in your own private servers ok
+exports.shinySentry = {
     PARENT: ["sentry"],
-    COLOR: 1,
+    COLOR: "lightGreen",
+    UPGRADE_COLOR: "lightGreen",
     DANGER: 4,
     SIZE: 12,
     VALUE: 50000,
+    SHAPE: 3,
     BODY: {
         HEALTH: 0.6 * base.HEALTH
     },
@@ -594,13 +599,53 @@ exports.shinySentry = { // if youre gonna mald about the shape not being 0 save 
 exports.shinySentrySwarm = {
     PARENT: ["shinySentry"],
     UPGRADE_LABEL: "Shiny Swarm Sentry",
+    UPGRADE_COLOR: "lightGreen",
     GUNS: [
         {
             POSITION: [6, 11, 1.3, 7, 0, 180, 0],
             PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.swarm, g.morerecoil]),
+                SHOOT_SETTINGS: combineStats([g.swarm, g.morerecoil, g.mach, { reload: 0.25 }]),
                 TYPE: "swarm",
                 STAT_CALCULATOR: gunCalcNames.swarm,
+            },
+        },
+    ],
+};
+exports.artilleryAutoTankgun = {
+    PARENT: ["genericTank"],
+    LABEL: "Artillery",
+    BODY: {
+        FOV: 2,
+    },
+    CONTROLLERS: [
+        "canRepel",
+        "onlyAcceptInArc",
+        "mapAltToFire",
+        "nearestDifferentMaster",
+    ],
+    COLOR: "grey",
+    GUNS: [{
+        POSITION: [17, 3, 1, 0, -6, -7, 0.25],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.gunner, g.arty, { reload: 0.25 }]),
+            TYPE: "bullet",
+            LABEL: "Secondary",
+        },
+    },
+        {
+            POSITION: [17, 3, 1, 0, 6, 7, 0.75],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.gunner, g.arty, { reload: 0.25 }]),
+                TYPE: "bullet",
+                LABEL: "Secondary",
+            },
+        },
+        {
+            POSITION: [19, 12, 1, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.pound, g.arty, { reload: 0.25 }]),
+                TYPE: "bullet",
+                LABEL: "Heavy",
             },
         },
     ],
@@ -610,8 +655,51 @@ exports.shinySentryGun = makeAuto(exports.shinySentry, "Sentry", {
     size: 12,
 });
 exports.shinySentryGun.UPGRADE_LABEL = "Shiny Gun Sentry";
+exports.barricadeAutoTankGun = {
+    PARENT: ["genericTank"],
+    LABEL: "Turret",
+    BODY: {
+        FOV: 0.5,
+    },
+    INDEPENDENT: true,
+    CONTROLLERS: ["nearestDifferentMaster"],
+    COLOR: "grey",
+    AI: {
+        SKYNET: true,
+        FULL_VIEW: true,
+    },
+    GUNS: [
+        {
+            POSITION: [24, 8, 1, 0, 0, 0, 0],
+        },
+        {
+            POSITION: [4, 8, 1.3, 22, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.trap, g.mini, g.halfrange, { reload: 0.25 }]),
+                TYPE: "trap",
+                STAT_CALCULATOR: gunCalcNames.trap,
+            },
+        },
+        {
+            POSITION: [4, 8, 1.3, 18, 0, 0, 0.333],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.trap, g.mini, g.halfrange, { reload: 0.25 }]),
+                TYPE: "trap",
+                STAT_CALCULATOR: gunCalcNames.trap,
+            },
+        },
+        {
+            POSITION: [4, 8, 1.3, 14, 0, 0, 0.667],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.trap, g.mini, g.halfrange, { reload: 0.25 }]),
+                TYPE: "trap",
+                STAT_CALCULATOR: gunCalcNames.trap,
+            },
+        },
+    ],
+};
 exports.shinySentryTrap = makeAuto(exports.shinySentry, "Sentry", {
-    type: exports.barricadeTurret,
+    type: exports.barricadeAutoTankGun,
     size: 12,
 });
 exports.shinySentryTrap.UPGRADE_LABEL = "Shiny Trap Sentry";
@@ -622,7 +710,7 @@ exports.sentinel = {
   TYPE: "crasher",
   LABEL: "Sentinel",
   DANGER: 7,
-  COLOR: 14,
+  COLOR: "purple",
   SHAPE: 5,
   SIZE: 13,
   SKILL: skillSet({
@@ -707,6 +795,7 @@ exports.sentinelMissile = {
 exports.sentinelLauncher = {
   PARENT: ["sentinel"],
   UPGRADE_LABEL: "Missile Sentinel",
+  UPGRADE_COLOR: "purple",
   GUNS: [
     {
       POSITION: [3, 12.45, -1.35, 17.2, 0, 0, 0],
@@ -733,6 +822,7 @@ exports.sentinelLauncher = {
 exports.sentinelCrossbow = {
   PARENT: ["sentinel"],
   UPGRADE_LABEL: "Crossbow Sentinel",
+  UPGRADE_COLOR: "purple",
     GUNS: [
         {
             POSITION: [15, 2.5, 1, 0, 3.5, 35/2, 2/3],
@@ -809,6 +899,7 @@ exports.sentinelCrossbow = {
 exports.sentinelMinigun = {
   PARENT: ["sentinel"],
   UPGRADE_LABEL: "Minigun Sentinel",
+  UPGRADE_COLOR: "purple",
   GUNS: [
   {
       POSITION: [16, 7.5, 1, 0, 4.5, 0, 0.2],
@@ -895,7 +986,7 @@ exports.sentinelMinigun = {
 exports.baseSwarmTurret = {
     PARENT: ["genericTank"],
     LABEL: "Protector",
-    COLOR: 16,
+    COLOR: "grey",
     BODY: {
         FOV: 2,
     },
@@ -936,6 +1027,7 @@ exports.baseProtector = {
     PARENT: ["genericTank"],
     LABEL: "Base",
     UPGRADE_LABEL: "Base Protector",
+    ON_MINIMAP: false,
     SIZE: 64,
     DAMAGE_CLASS: 0,
     ACCEPTS_SCORE: false,
@@ -1080,7 +1172,8 @@ exports.arenaCloser = {
     NAME: "Arena Closer",
     DANGER: 10,
     SIZE: 34,
-    COLOR: 3,
+    COLOR: "yellow",
+    UPGRADE_COLOR: "yellow",
     LAYER: 13,
     BODY: {
         REGEN: 1e5,
@@ -1203,7 +1296,7 @@ exports.antiTankMachineGun = {
 exports.tracker3gun = {
   PARENT: ["genericTank"],
   LABEL: "",
-  COLOR: 34,
+  COLOR: "timeGem",
   BODY: {
     FOV: 3,
   },

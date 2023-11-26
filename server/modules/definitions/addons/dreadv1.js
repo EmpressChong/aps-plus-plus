@@ -20,7 +20,7 @@ const dreadnoughtBody = {
     SPEED: 1.4,
     HEALTH: 400,
     DAMAGE: 10,
-    RESIST: 3,
+    RESIST: 1,
     PENETRATION: 2,
     SHIELD: 40,
     REGEN: 0.025,
@@ -38,7 +38,7 @@ module.exports = ({ Class }) => {
 	    BODY: dreadnoughtBody,
 	    SHAPE: 6,
 	    COLOR: 9,
-	    SIZE: 50,
+	    SIZE: 30,
 	    SKILL_CAP: Array(10).fill(smshskl+3),
 		REROOT_UPGRADE_TREE: "dreadOfficialV1",
 	};
@@ -93,13 +93,63 @@ module.exports = ({ Class }) => {
 	        }
 	    }]
 	};
+	Class.medicareTurret = {
+		PARENT: ["genericTank"],
+	    LABEL: "Turret",
+	    CONTROLLERS: [ ["spin", {speed: 0.04}] ],
+	    INDEPENDENT: true,
+	    COLOR: 16,
+	    GUNS: [],
+		TURRETS: [{
+			POSITION: [13, 0, 0, 0, 360, 1],
+            TYPE: "healerSymbol",
+		}],
+	};
+	for(let i = 0; i < 3; i++) {
+		Class.medicareTurret.GUNS.push({
+            POSITION: [8, 9, -0.5, 12.5, 0, 120*i, 0],
+        },
+        {
+            POSITION: [18, 10, 1, 0, 0, 120*i, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.flank, g.pound, g.halfspeed, g.healer]),
+                TYPE: "healerBullet",
+				AUTOFIRE: true,
+            },
+        })
+	}
+	Class.medicaidTurret = {
+		PARENT: ["genericTank"],
+	    LABEL: "Turret",
+	    CONTROLLERS: [ ["spin", {speed: 0.04}] ],
+	    INDEPENDENT: true,
+	    COLOR: 16,
+	    GUNS: [],
+		TURRETS: [{
+			POSITION: [13, 0, 0, 0, 360, 1],
+            TYPE: "healerSymbol",
+		}],
+	};
+	for(let i = 0; i < 5; i++) {
+		Class.medicaidTurret.GUNS.push({
+            POSITION: [8, 9, -0.5, 12.5, 0, 72*i, 0],
+        },
+        {
+            POSITION: [18, 10, 1, 0, 0, 72*i, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.flank, g.flank, g.pound, g.halfspeed, g.healer]),
+                TYPE: "healerBullet",
+				AUTOFIRE: true,
+            },
+        })
+	}
 	Class.turretedTrap = makeAuto(Class.trap);
 
 	// T0
 	Class.dreadOfficialV1 = {
 	    PARENT: ["genericDreadnought1"],
 	    LABEL: "Dreadnought",
-	    UPGRADE_LABEL: "Dreadnought (V1)",
+	    UPGRADE_LABEL: "Dreads V1",
 		LEVEL: 150,
 		EXTRA_SKILL: 48,
 	}
@@ -202,6 +252,14 @@ module.exports = ({ Class }) => {
 	        POSITION: [22, 0, 0, 0, 0, 0],
 	        TYPE: ["smasherBody", {INDEPENDENT: false} ]
 	    }]
+	}
+	Class.medicareOfficialV1 = {
+		PARENT: ["genericDreadnought1"],
+	    LABEL: "Medicare",
+	    TURRETS: [{
+			POSITION: [8, 0, 0, 0, 360, 1],
+			TYPE: "medicareTurret",
+		}],
 	}
 
 	// T2
@@ -470,6 +528,14 @@ module.exports = ({ Class }) => {
 	        TYPE: ["smasherBody", {INDEPENDENT: false} ]
 	    }],
 	}
+	Class.medicaidOfficialV1 = {
+		PARENT: ["genericDreadnought1"],
+	    LABEL: "Medicaid",
+	    TURRETS: [{
+			POSITION: [8, 0, 0, 0, 360, 1],
+			TYPE: "medicaidTurret",
+		}],
+	}
 
 	Class.addons.UPGRADES_TIER_0.push("dreadOfficialV1");
 		Class.dreadOfficialV1.UPGRADES_TIER_1 = ["swordOfficialV1", "pacifierOfficialV1", "invaderOfficialV1", "centaurOfficialV1"];
@@ -479,13 +545,14 @@ module.exports = ({ Class }) => {
 			Class.centaurOfficialV1.UPGRADES_TIER_M1 = ["cerberusOfficialV1", "minotaurOfficialV1", "sirenOfficialV1"];
 			Class.automationOfficialV1.UPGRADES_TIER_M1 = ["mechanismOfficialV1"];
 			Class.juggernautOfficialV1.UPGRADES_TIER_M1 = ["behemothOfficialV1"];
+			Class.medicareOfficialV1.UPGRADES_TIER_M1 = ["medicaidOfficialV1"];
 
 	for (let primary of Class.dreadOfficialV1.UPGRADES_TIER_1) {
 		let primaryName = primary;
 		primary = ensureIsClass(Class, primary);
 		primary.UPGRADES_TIER_1 = [];
 
-		for (let secondary of [ "swordOfficialV1", "pacifierOfficialV1", "invaderOfficialV1", "centaurOfficialV1", "automationOfficialV1", "juggernautOfficialV1" ]) {
+		for (let secondary of [ "swordOfficialV1", "pacifierOfficialV1", "invaderOfficialV1", "centaurOfficialV1", "automationOfficialV1", "juggernautOfficialV1", "medicareOfficialV1" ]) {
 			let secondaryName = secondary;
 	        secondary = ensureIsClass(Class, secondary);
 

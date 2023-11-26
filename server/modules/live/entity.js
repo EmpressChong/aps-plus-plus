@@ -189,6 +189,7 @@ class Gun {
         return {
             ...this.lastShot, 
             color: this.color,
+            alpha: this.alpha,
             borderless: this.borderless, 
             drawFill: this.drawFill, 
             drawAbove: this.drawAbove,
@@ -302,13 +303,17 @@ class Gun {
         this.lastShot.power = 3 * Math.log(Math.sqrt(sk.spd) + this.trueRecoil + 1) + 1;
         this.motion += this.lastShot.power;
         // Find inaccuracy
-        let shudder, spread;
-        do {
-            shudder = ran.gauss(0, Math.sqrt(this.settings.shudder));
-        } while (Math.abs(shudder) >= this.settings.shudder * 2);
-        do {
-            spread = ran.gauss(0, this.settings.spray * this.settings.shudder);
-        } while (Math.abs(spread) >= this.settings.spray / 2);
+        let shudder = 0, spread = 0;
+        if (this.settings.shudder) {
+            do {
+                shudder = ran.gauss(0, Math.sqrt(this.settings.shudder));
+            } while (Math.abs(shudder) >= this.settings.shudder * 2);
+        }
+        if (this.settings.spray) {
+            do {
+                spread = ran.gauss(0, this.settings.spray * this.settings.shudder);
+            } while (Math.abs(spread) >= this.settings.spray / 2);
+        }
         spread *= Math.PI / 180;
         // Find speed
         let vecLength = (this.negRecoil ? -1 : 1) * this.settings.speed * c.runSpeed * sk.spd * (1 + shudder),
@@ -708,6 +713,7 @@ class StatusEffect extends EventEmitter {
 }
 
 let entitiesIdLog = 0;
+const forceTwiggle = ["autospin", "turnWithSpeed", "spin", "fastspin", "withMotion", "smoothWithMotion", "looseWithMotion"];
 class Entity extends EventEmitter {
     constructor(position, master) {
         super();
@@ -803,6 +809,7 @@ class Entity extends EventEmitter {
         this.define("genericEntity");
         // Initalize physics and collision
         this.alwaysShowOnMinimap = false;
+        this.allowedOnMinimap = true;
         this.maxSpeed = 0;
         this.facingLocked = false;
         this.facing = 0;
@@ -1128,6 +1135,7 @@ class Entity extends EventEmitter {
                     }
                 }
             }
+            for (let child of this.children) child.team = set.TEAM
         }
         if (set.VARIES_IN_SIZE != null) {
             this.settings.variesInSize = set.VARIES_IN_SIZE;
@@ -1247,6 +1255,7 @@ class Entity extends EventEmitter {
             for (let root of this.rerootUpgradeTree) finalRoot += root + "\\/";
             this.rerootUpgradeTree = finalRoot.substring(0, finalRoot.length - 2);
         }
+        if (set.ON_MINIMAP != null) this.allowedOnMinimap = set.ON_MINIMAP;
         if (set.TURRETS != null) {
             for (let i = 0; i < this.turrets.length; i++) {
                 this.turrets[i].destroy();
@@ -1608,15 +1617,15 @@ class Entity extends EventEmitter {
             mirrorMasterAngle: this.settings.mirrorMasterAngle ?? false,
             perceptionAngleIndependence: this.perceptionAngleIndependence, //vfacing: this.vfacing,
             defaultAngle: this.firingArc[0],
-            twiggle: this.facingType === "autospin" || this.facingType === "spin" || this.facingType === "fastspin" || (this.facingType === "locksFacing" && this.control.alt),
+            twiggle: forceTwiggle.includes(this.facingType) || (this.facingType === "locksFacing" && this.control.alt),
             layer: this.layerID ? this.layerID : this.bond != null ? this.bound.layer : this.type === "wall" ? 11 : this.type === "food" ? 10 : this.type === "tank" ? 5 : this.type === "crasher" ? 1 : 0,
             color: this.color,
+            borderless: this.borderless,
+            drawFill: this.drawFill,
             name: (this.nameColor || "#FFFFFF") + this.name,
             score: this.skill.score,
             guns: this.guns.map((gun) => gun.getPhotoInfo()),
             turrets: this.turrets.map((turret) => turret.camera(true)),
-
-            upgradeColor: this.upgradeColor,
             glow: this.glow,
         };
     }
@@ -2081,10 +2090,21 @@ class Entity extends EventEmitter {
 
             for (let i = 0; i < killers.length; i++) {
                 let instance = killers[i];
-
-                if (this.type === "tank") killers.length > 1 ? instance.killCount.assists++ : instance.killCount.solo++;
-                if (this.type === "food" || this.type === "crasher") instance.killCount.polygons++;
-                if (this.type === "miniboss") instance.killCount.bosses++;
+                
+                switch (this.type) {
+                    case "tank":
+                        killers.length > 1 ? instance.killCount.assists++ : instance.killCount.solo++;
+                        break;
+                    
+                    case "food":
+                    case "crasher":
+                        instance.killCount.polygons++;
+                        break
+                    
+                    case "miniboss": 
+                        instance.killCount.bosses++;
+                        break;
+                }
 
                 this.killCount.killers.push(instance.index);
             };

@@ -341,7 +341,8 @@ var gameDraw = {
                 return gameDraw.color.mustard;
             case 26:
             case "darkOrange":
-                return gameDraw.color.dorange;
+            case "tangerine":
+                return gameDraw.color.tangerine;
             case 27:
             case "brown":
                 return gameDraw.color.brown;

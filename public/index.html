@@ -40,7 +40,7 @@
                             <input type="text" class="conceal" tabindex="3" placeholder="Insert token here" id="playerKeyInput" maxlength="64" />
                         </div>
                         <div class="slider" id="startMenuSlidingTrigger">
-                            <h3 class="nopadding">view options/help ▸</h3>
+                            <h3 class="nopadding">view options ▸</h3>
                         </div>
                         <div class="slider">
                             <br>
@@ -62,10 +62,21 @@
                                 <option value="classic">Classic (by Neph)</option>
                                 <option value="forest">Forest (by Sterlon)</option>
                                 <option value="midnight">Midnight (by uoiea)</option>
-                                <option value="pastel">Snow (by Deolveopoler)</option>
-                                <option value="ocean">Coral Reef (by Celestea)</option>
+                                <option value="snow">Snow (by Deolveopoler)</option>
+                                <option value="coralReef">Coral Reef (by Celestea)</option>
                                 <option value="badlands">Badlands (by Incognious)</option>
                                 <option value="bleach">Bleach (by definitelynot.)</option>
+                                <option value="pumpkinSkeleton">Pumpkin Skeleton (by Road)</option>
+                                <option value="retro">Retro (by Damocles)</option>
+                                <option value="pastel">Pastel (by Damocles)</option>
+                                <option value="discord">Discord (by Damocles)</option>
+                                <option value="wrSheetTheme">WR Sheet Theme (by alettera)</option>
+                                <option value="descent">Descent (by Rog456)</option>
+                                <option value="solarizedDark">Solarized Dark (by Road)</option>
+                                <option value="eggplant">Eggplant (by Road)</option>
+                                <option value="gruvbox">Gruvbox (by Road)</option>
+                                <option value="lyric">Lyric (by evil isopod)</option>
+                                <option value="blindness">Blindness (by Damocles)</option>
                             </select>
                             <select id="optBorders" tabindex="-1">
                                 <option value="normal">Soft Borders</option>
@@ -131,10 +142,10 @@
         $("#startMenuSlidingTrigger").on('click', function() {
             clicked = !clicked;
             if (clicked) {
-                $(this).html('<h3 class="nopadding">close options/help ▾</h3>');
+                $(this).html('<h3 class="nopadding">close options ▾</h3>');
                 $(".slider").css({ "top": "-265px" })
             } else {
-                $(this).html('<h3 class="nopadding">view options/help ▸</h3>');
+                $(this).html('<h3 class="nopadding">view options ▸</h3>');
                 $(".slider").css({ "top": 0 });
             }
         });

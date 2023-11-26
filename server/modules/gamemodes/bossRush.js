@@ -10,7 +10,14 @@ class BossRush {
         this.bossChoices = [
             // [ cost , definition reference ],
 
-            //elite crashers
+            //mysticals
+            [  1, "sorcerer"],
+            [  2, "summoner"],
+            [  2, "enchantress"],
+            [  2, "exorcistor"],
+            [  2, "shaman"],
+
+            //elites
             [  2, "eliteDestroyer"],
             [  2, "eliteGunner"],
             [  2, "eliteSprayer"],
@@ -18,16 +25,7 @@ class BossRush {
             [  2, "eliteSpawner"],
             [  2, "eliteTrapGuard"],
             [  2, "eliteSpinner"],
-
-            //elite tanks
             [  2, "eliteSkimmer"],
-
-            //mysticals
-            [  1, "sorcerer"],
-            [  2, "summoner"],
-            [  2, "enchantress"],
-            [  2, "exorcistor"],
-            [  2, "shaman"],
 
             //nesters
             [  3, "nestKeeper"],
@@ -91,19 +89,19 @@ class BossRush {
         sockets.broadcast(o.name + ' has arrived and joined your team!');
     }
 
-    spawnDominator(tile, team, type = false) {
-        type = type ? type : Class.destroyerDominator;
+    spawnSanctuary(tile, team, type = false) {
+        type = type ? type : Class.sanctuaryTier3;
         let o = new Entity(tile.loc);
         o.define(type);
         o.team = team;
         o.color = getTeamColor(team);
         o.skill.score = 111069;
-        o.name = 'Dominator';
+        o.name = 'Sanctuary';
         o.SIZE = room.tileWidth / 10;
         o.isDominator = true;
         o.controllers = [new ioTypes.nearestDifferentMaster(o), new ioTypes.spin(o, { onlyWhenIdle: true })];
         o.on('dead', () => {
-            let isAC;
+            /*let isAC;
             for (let instance of o.collisionArray) {
                 if (TEAM_ROOM !== instance.team && instance.type !== 'food' && instance.type !== 'wall') {
                     isAC = true;
@@ -111,19 +109,15 @@ class BossRush {
             }
             if (isAC) {
                 tile.color = 'white';
-                sockets.broadcast('A dominator has been disabled by the arena!');
-
-            } else if (o.team === TEAM_ENEMIES) {
-                this.spawnDominator(tile, TEAM_BLUE, type);
+            } else */if (o.team === TEAM_ENEMIES) {
+                this.spawnSanctuary(tile, TEAM_BLUE, Class.sanctuaryTier3);
                 tile.color = getTeamColor(TEAM_BLUE);
-                sockets.broadcast('A dominator has been captured by BLUE!');
-
+                sockets.broadcast('A sanctuary has been repaired!');
             } else {
-                this.spawnDominator(tile, TEAM_ENEMIES, type);
+                this.spawnSanctuary(tile, TEAM_ENEMIES, Class.dominator);
                 tile.color = getTeamColor(TEAM_ENEMIES);
-                sockets.broadcast('A dominator has been captured by the bosses!');
+                sockets.broadcast('A sanctuary has been destroyed!');
             }
-
             sockets.broadcastRoom();
         });
     }
@@ -149,16 +143,16 @@ class BossRush {
             //this enemy has been killed, decrease the remainingEnemies counter
             //if afterwards the counter happens to be 0, announce that the wave has been defeated
             if (!--this.remainingEnemies) {
-                sockets.broadcast(`Wave ${this.waveId + 1} is defeated!`);
+                sockets.broadcast(`Wave ${this.waveId + 1} has been defeated!`);
+                sockets.broadcast(`The next wave will start shortly.`);
             }
         });
-        
         return enemy;
     }
 
     spawnWave(waveId) {
         //yell at everyone
-        sockets.broadcast(`Wave ${waveId + 1} has arrived!`);
+        sockets.broadcast(`Wave ${waveId + 1} has started!`);
 
         //spawn bosses
         for (let boss of this.waves[waveId]) {
@@ -189,12 +183,11 @@ class BossRush {
 
     //runs once when the server starts
     init() {
-        Class.basic.UPGRADES_TIER_1.push('healer');
+        Class.basic.UPGRADES_TIER_2.push("healer");
         //TODO: filter out tiles that are not of sanctuary type
         for (let tile of room.spawnable[TEAM_BLUE]) {
-            this.spawnDominator(tile, TEAM_BLUE);
+            this.spawnSanctuary(tile, TEAM_BLUE);
         }
-        console.log('Boss rush initialized.');
     }
 
     //runs every second

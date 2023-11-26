@@ -1,5 +1,5 @@
 let bases = require('../tiles/tdm.js'),
-	teams = 4,
+	teams = require('../gamemodeconfigs/tdm.js').TEAMS,
 	room = Array(15).fill(() => Array(15).fill()).map(x => x()),
 locations = [
 	[

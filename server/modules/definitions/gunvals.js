@@ -144,5 +144,5 @@ module.exports = {
     halfrange: { range: 0.5 },
     acc: { shudder: 0.1 },
     aura: { reload: 0.001, recoil: 0.001, shudder: 0.001, size: 6, damage: 3, speed: 0.001, maxSpeed: 0.001, spray: 0.001 },
-    noRandom: { shudder: 0.00001, spray: 0.00001 }
+    noRandom: { shudder: 0, spray: 0 }
 }
