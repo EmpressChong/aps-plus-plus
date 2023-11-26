@@ -19,7 +19,8 @@ const nameMap = {
     ffa: "FFA",
     opentdm: `Open ${output.TEAMS}TDM`,
     //clanwars: "Clan Wars",
-    trainwars: "Train Wars"
+    trainwars: "Train Wars",
+    siege: "Apocalypse"
 };
 
 module.exports.gameModeName = output.GAMEMODE_NAME_PREFIXES.join(' ') + ' ' + output.GAME_MODES.map(x => nameMap[x] || (x[0].toUpperCase() + x.slice(1))).join(' ');
